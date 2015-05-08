@@ -1,17 +1,20 @@
 #include <GL/glew.h>
 #include <GL/glfw3.h>
 #include <iostream>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <vector>
 
 #include "controls.hpp"
 #include "texture.hpp"
+#include "objloader.hpp"
 #include "shader.h"
 
 const GLuint Width(1200), Height(800);     //window size
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode);
 void init();
-void render();
+void render(GLFWwindow *window);
 
 int main()
 {
@@ -32,7 +35,8 @@ int main()
 		glfwTerminate();
 		return -1;
 	}
-
+	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
+	glfwSetCursorPos(window, 1200/2, 800/2);
 	glfwSetKeyCallback(window, key_callback);  //keyboard function
 	glewExperimental = GL_TRUE;
 
@@ -48,7 +52,7 @@ int main()
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwPollEvents();
-		render();
+		render(window);
 		glfwSwapBuffers(window);
 	}
 
@@ -57,99 +61,27 @@ int main()
 }
 
 Shader TriangleShader("Triangle Shader");
-GLuint vao, vbo, vbo_color;
+GLuint vao, uvbuffer, vertexbuffer;
 GLuint program, texture;
 GLuint mvp_loc, tex_loc;
 
-static const GLfloat VertexData[] = {
-	-1.0f,-1.0f,-1.0f,
-	-1.0f,-1.0f, 1.0f,
-	-1.0f, 1.0f, 1.0f,
-	1.0f, 1.0f,-1.0f,
-	-1.0f,-1.0f,-1.0f,
-	-1.0f, 1.0f,-1.0f,
-	1.0f,-1.0f, 1.0f,
-	-1.0f,-1.0f,-1.0f,
-	1.0f,-1.0f,-1.0f,
-	1.0f, 1.0f,-1.0f,
-	1.0f,-1.0f,-1.0f,
-	-1.0f,-1.0f,-1.0f,
-	-1.0f,-1.0f,-1.0f,
-	-1.0f, 1.0f, 1.0f,
-	-1.0f, 1.0f,-1.0f,
-	1.0f,-1.0f, 1.0f,
-	-1.0f,-1.0f, 1.0f,
-	-1.0f,-1.0f,-1.0f,
-	-1.0f, 1.0f, 1.0f,
-	-1.0f,-1.0f, 1.0f,
-	1.0f,-1.0f, 1.0f,
-	1.0f, 1.0f, 1.0f,
-	1.0f,-1.0f,-1.0f,
-	1.0f, 1.0f,-1.0f,
-	1.0f,-1.0f,-1.0f,
-	1.0f, 1.0f, 1.0f,
-	1.0f,-1.0f, 1.0f,
-	1.0f, 1.0f, 1.0f,
-	1.0f, 1.0f,-1.0f,
-	-1.0f, 1.0f,-1.0f,
-	1.0f, 1.0f, 1.0f,
-	-1.0f, 1.0f,-1.0f,
-	-1.0f, 1.0f, 1.0f,
-	1.0f, 1.0f, 1.0f,
-	-1.0f, 1.0f, 1.0f,
-	1.0f,-1.0f, 1.0f
-};
-
-static const GLfloat uvData[] = {
-	0.000059f, 0.000004f, 
-	0.000103f, 0.336048f, 
-	0.335973f, 0.335903f, 
-	1.000023f, 0.000013f, 
-	0.667979f, 0.335851f, 
-	0.999958f, 0.336064f, 
-	0.667979f, 0.335851f, 
-	0.336024f, 0.671877f, 
-	0.667969f, 0.671889f, 
-	1.000023f, 0.000013f, 
-	0.668104f, 0.000013f, 
-	0.667979f, 0.335851f, 
-	0.000059f, 0.000004f, 
-	0.335973f, 0.335903f, 
-	0.336098f, 0.000071f, 
-	0.667979f, 0.335851f, 
-	0.335973f, 0.335903f, 
-	0.336024f, 0.671877f, 
-	1.000004f, 0.671847f, 
-	0.999958f, 0.336064f, 
-	0.667979f, 0.335851f, 
-	0.668104f, 0.000013f, 
-	0.335973f, 0.335903f, 
-	0.667979f, 0.335851f, 
-	0.335973f, 0.335903f, 
-	0.668104f, 0.000013f, 
-	0.336098f, 0.000071f, 
-	0.000103f, 0.336048f, 
-	0.000004f, 0.671870f, 
-	0.336024f, 0.671877f, 
-	0.000103f, 0.336048f, 
-	0.336024f, 0.671877f, 
-	0.335973f, 0.335903f, 
-	0.667969f, 0.671889f, 
-	1.000004f, 0.671847f, 
-	0.667979f, 0.335851f
-};
 
 void init_buffer()
 {
-	glGenBuffers(1, &vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(VertexData), VertexData, GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	glGenBuffers(1, &vbo_color);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo_color);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(uvData), uvData, GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	// Read our .obj file
+	std::vector<glm::vec3> vertices;
+	std::vector<glm::vec2> uvs;
+	std::vector<glm::vec3> normals; // Won't be used at the moment.
+	bool res = loadOBJ("../common/media/object/cube.obj", vertices, uvs, normals);
+
+	glGenBuffers(1, &vertexbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), &vertices[0], GL_STATIC_DRAW);
+
+	glGenBuffers(1, &uvbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
+	glBufferData(GL_ARRAY_BUFFER, uvs.size() * sizeof(glm::vec2), &uvs[0], GL_STATIC_DRAW);
 }
 
 void init_shader()
@@ -169,28 +101,30 @@ void init_vertexArray()
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	glBindBuffer(GL_ARRAY_BUFFER, vbo_color);
+	glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glBindVertexArray(0);
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
 }
 
 void init_texture()
 {
-	texture = loadDDS("../common/media/texture/uvtemplate.DDS");
+	texture = loadDDS("../common/media/texture/uvmap.DDS");
 }
 
 void init()
 {
 	glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
+	glDepthFunc(GL_LESS);
 	init_texture();
 	init_shader();
 	init_buffer();
@@ -199,19 +133,18 @@ void init()
 
 
 
-void render()
+void render(GLFWwindow *window)
 {
 	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
 	glClearDepth(1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	float time = static_cast<GLfloat>( glfwGetTime() );
+	computeMatricesFromInputs(window);
+	glm::mat4 ProjectionMatrix = getProjectionMatrix();
+	glm::mat4 ViewMatrix = getViewMatrix();
+	glm::mat4 ModelMatrix = glm::mat4(1.0);
+	glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
 
-	glm::mat4 model = glm::rotate(glm::mat4(1.0f), time, glm::vec3(1.0f, 1.0f, 1.0f) );
-	glm::mat4 view = glm::lookAt(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f),
-		glm::vec3(0.0f, 1.0f, 0.0f) );
-	glm::mat4 proj = glm::perspective(45.0f, float(Width) / Height, 0.1f, 1000.0f);
-	glm::mat4 mvp = proj * view * model;
 
 	glUseProgram(program);
 

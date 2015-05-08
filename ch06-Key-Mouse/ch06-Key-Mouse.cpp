@@ -11,7 +11,7 @@
 const GLuint Width(1200), Height(800);     //window size
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode);
 void init();
-void render();
+void render(GLFWwindow *window);
 
 int main()
 {
@@ -32,7 +32,8 @@ int main()
 		glfwTerminate();
 		return -1;
 	}
-
+	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
+	glfwSetCursorPos(window, 1200/2, 800/2);
 	glfwSetKeyCallback(window, key_callback);  //keyboard function
 	glewExperimental = GL_TRUE;
 
@@ -48,7 +49,7 @@ int main()
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwPollEvents();
-		render();
+		render(window);
 		glfwSwapBuffers(window);
 	}
 
@@ -190,7 +191,7 @@ void init_texture()
 void init()
 {
 	glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
+	glDepthFunc(GL_LESS);
 	init_texture();
 	init_shader();
 	init_buffer();
@@ -199,19 +200,18 @@ void init()
 
 
 
-void render()
+void render(GLFWwindow *window)
 {
 	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
 	glClearDepth(1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	float time = static_cast<GLfloat>( glfwGetTime() );
+	computeMatricesFromInputs(window);
+	glm::mat4 ProjectionMatrix = getProjectionMatrix();
+	glm::mat4 ViewMatrix = getViewMatrix();
+	glm::mat4 ModelMatrix = glm::mat4(1.0);
+	glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
 
-	glm::mat4 model = glm::rotate(glm::mat4(1.0f), time, glm::vec3(1.0f, 1.0f, 1.0f) );
-	glm::mat4 view = glm::lookAt(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f),
-		glm::vec3(0.0f, 1.0f, 0.0f) );
-	glm::mat4 proj = glm::perspective(45.0f, float(Width) / Height, 0.1f, 1000.0f);
-	glm::mat4 mvp = proj * view * model;
 
 	glUseProgram(program);
 
