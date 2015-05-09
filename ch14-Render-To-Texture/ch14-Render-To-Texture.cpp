@@ -8,140 +8,8 @@
 
 #include "controls.hpp"
 #include "texture.hpp"
-#include "shader.h"
 #include "objloader.hpp"
-#include <vector>
-#include <cstring>
-
-#include <GL/glew.h>
-
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-using namespace glm;
-
 #include "shader.h"
-#include "texture.hpp"
-
-
-unsigned int Text2DTextureID;
-unsigned int Text2DVertexBufferID;
-unsigned int Text2DUVBufferID;
-unsigned int Text2DShaderID;
-unsigned int Text2DUniformID;
-unsigned int Text2Dvao;
-static Shader Tex2DShader("Text 2d");
-
-void initText2D(const char * texturePath)
-{
-
-	Text2DTextureID = loadDDS(texturePath);
-
-	// Initialize Shader
-	Tex2DShader.init();
-	Tex2DShader.attach(GL_VERTEX_SHADER, "tex2d.vert");
-	Tex2DShader.attach(GL_FRAGMENT_SHADER, "tex2d.frag");
-	Tex2DShader.link();
-
-	Text2DShaderID = Tex2DShader.program;
-	Text2DUniformID = glGetUniformLocation(Text2DShaderID, "tex2d");
-}
-
-void printText2D(const char * text, int x, int y, int size){
-
-	unsigned int length = strlen(text);
-
-	// Fill buffers
-	std::vector<glm::vec2> vertices;
-	std::vector<glm::vec2> UVs;
-	for ( unsigned int i=0 ; i<length ; i++ ){
-
-		glm::vec2 vertex_up_left    = glm::vec2( x+i*size     , y+size );
-		glm::vec2 vertex_up_right   = glm::vec2( x+i*size+size, y+size );
-		glm::vec2 vertex_down_right = glm::vec2( x+i*size+size, y      );
-		glm::vec2 vertex_down_left  = glm::vec2( x+i*size     , y      );
-
-		vertices.push_back(vertex_up_left   );
-		vertices.push_back(vertex_down_left );
-		vertices.push_back(vertex_up_right  );
-
-		vertices.push_back(vertex_down_right);
-		vertices.push_back(vertex_up_right);
-		vertices.push_back(vertex_down_left);
-
-		char character = text[i];
-		float uv_x = (character%16)/16.0f;
-		float uv_y = (character/16)/16.0f;
-
-		glm::vec2 uv_up_left    = glm::vec2( uv_x           , uv_y );
-		glm::vec2 uv_up_right   = glm::vec2( uv_x+1.0f/16.0f, uv_y );
-		glm::vec2 uv_down_right = glm::vec2( uv_x+1.0f/16.0f, (uv_y + 1.0f/16.0f) );
-		glm::vec2 uv_down_left  = glm::vec2( uv_x           , (uv_y + 1.0f/16.0f) );
-		UVs.push_back(uv_up_left   );
-		UVs.push_back(uv_down_left );
-		UVs.push_back(uv_up_right  );
-
-		UVs.push_back(uv_down_right);
-		UVs.push_back(uv_up_right);
-		UVs.push_back(uv_down_left);
-	}
-	glGenVertexArrays(1, &Text2Dvao);
-	glBindVertexArray(Text2Dvao);
-
-	glGenBuffers(1, &Text2DVertexBufferID);
-	glBindBuffer(GL_ARRAY_BUFFER, Text2DVertexBufferID);
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec2), &vertices[0], GL_STATIC_DRAW);
-	
-	glGenBuffers(1, &Text2DUVBufferID);
-	glBindBuffer(GL_ARRAY_BUFFER, Text2DUVBufferID);
-	glBufferData(GL_ARRAY_BUFFER, UVs.size() * sizeof(glm::vec2), &UVs[0], GL_STATIC_DRAW);
-
-	// Bind shader
-	glUseProgram(Text2DShaderID);
-
-	// Bind texture
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, Text2DTextureID);
-	// Set our "myTextureSampler" sampler to user Texture Unit 0
-	glUniform1i(Text2DUniformID, 0);
-
-	// 1rst attribute buffer : vertices
-	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, Text2DVertexBufferID);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0 );
-
-	// 2nd attribute buffer : UVs
-	glEnableVertexAttribArray(1);
-	glBindBuffer(GL_ARRAY_BUFFER, Text2DUVBufferID);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void*)0 );
-
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	// Draw call
-	glDrawArrays(GL_TRIANGLES, 0, vertices.size() );
-
-	glDisable(GL_BLEND);
-	glUseProgram(0);
-	glBindVertexArray(0);
-
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
-
-}
-
-void cleanupText2D(){
-
-	// Delete buffers
-	glDeleteBuffers(1, &Text2DVertexBufferID);
-	glDeleteBuffers(1, &Text2DUVBufferID);
-
-	// Delete texture
-	glDeleteTextures(1, &Text2DTextureID);
-
-	// Delete shader
-	glDeleteProgram(Text2DShaderID);
-}
-
 
 const GLuint Width(1200), Height(800);     //window size
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode);
@@ -167,7 +35,8 @@ int main()
 		glfwTerminate();
 		return -1;
 	}
-
+	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
+	glfwSetCursorPos(window, 1200/2, 800/2);
 	glfwSetKeyCallback(window, key_callback);  //keyboard function
 	glewExperimental = GL_TRUE;
 
@@ -190,19 +59,54 @@ int main()
 	glfwTerminate();
 	return 0;
 }
+
 Shader TriangleShader("Triangle Shader");
 GLuint vao, uvbuffer, vertexbuffer, normalbuffer, elementbuffer;
 GLuint program, texture;
 GLuint proj_loc, mv_loc, tex_loc;
 GLuint VertexSize;
+GLuint fbo, tbo;
 
+Shader FboShader("Frame Buffer");
+GLuint f_vao, f_uv, f_vbo;
+GLuint f_program, f_tex_loc;
+static const GLfloat QuadData[] = 
+{
+	-1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+	-0.5f, -1.0f, 0.0f, 1.0f, 0.0f,
+    -0.5f, -0.5f, 0.0f, 1.0f, 1.0f,
+
+	-0.5f, -0.5f, 0.0f, 1.0f, 1.0f,
+	-1.0f, -0.5f, 0.0f, 0.0f, 1.0f,
+	-1.0f, -1.0f, 0.0f , 0.0f, 0.0f
+};
+
+void init_framebuffer()
+{
+	glGenFramebuffers(1, &fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+	glGenTextures(1, &tbo);
+	glBindTexture(GL_TEXTURE_2D, tbo);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1200, 800, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); 
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, tbo, 0);
+
+	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		std::cout << "Fbo is not complete" << std::endl;
+
+	GLenum drawbuffers[1] = {GL_COLOR_ATTACHMENT0};
+	glDrawBuffers(1, drawbuffers);
+}
 void init_buffer()
 {
 	std::vector<unsigned short> indices;
 	std::vector<glm::vec3> indexed_vertices;
 	std::vector<glm::vec2> indexed_uvs;
 	std::vector<glm::vec3> indexed_normals;
-
 	bool res = loadAssImp("../common/media/object/suzanne.obj", indices, indexed_vertices, indexed_uvs, indexed_normals);
 	
 
@@ -226,6 +130,11 @@ void init_buffer()
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned short), &indices[0] , GL_STATIC_DRAW);
 
 	VertexSize = indices.size();
+
+	glGenBuffers(1, &f_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, f_vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(QuadData), QuadData, GL_STATIC_DRAW);
+
 }
 
 void init_shader()
@@ -239,6 +148,15 @@ void init_shader()
 	mv_loc = glGetUniformLocation(program, "mv");
 	proj_loc = glGetUniformLocation(program, "proj");
 	tex_loc = glGetUniformLocation(program, "tex");
+
+
+	FboShader.init();
+	FboShader.attach(GL_VERTEX_SHADER, "fbo.vert");
+	FboShader.attach(GL_FRAGMENT_SHADER, "fbo.frag");
+	FboShader.link();
+	f_program = FboShader.program;
+	f_tex_loc = glGetUniformLocation(f_program, "tex");
+	glUniform1i(f_tex_loc, 0);
 }
 
 void init_vertexArray()
@@ -249,10 +167,12 @@ void init_vertexArray()
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glEnableVertexAttribArray(2);
 	glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
@@ -263,7 +183,16 @@ void init_vertexArray()
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
 	glDisableVertexAttribArray(2);
-	
+
+	glGenVertexArrays(1, &f_vao);
+	glBindVertexArray(f_vao);
+	glBindBuffer(GL_ARRAY_BUFFER, f_vbo);
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*) (3 * sizeof(GLfloat)) );
+	glBindVertexArray(0);
+	glDisableVertexAttribArray(0);
 }
 
 void init_texture()
@@ -274,23 +203,24 @@ void init_texture()
 void init()
 {
 	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LESS); 
-    glEnable(GL_CULL_FACE);
-	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
-	glClearDepth(1.0f);
-
+	glDepthFunc(GL_LESS);
+	init_texture();
 	init_shader();
 	init_buffer();
 	init_vertexArray();
-	init_texture();
-
-	initText2D( "../common/media/texture/Holstein.DDS" );
+	init_framebuffer();
 }
 
 void render(GLFWwindow *window)
 {
+
+	//First We render to fbo
+	glUseProgram(program);
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClearDepth(1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	float time = glfwGetTime();
+	glViewport(0,0,1200, 800); // Render on the whole framebuffer, complete from the lower left corner to the upper right
 
 	computeMatricesFromInputs(window);
 	glm::mat4 ProjectionMatrix = getProjectionMatrix();
@@ -298,39 +228,49 @@ void render(GLFWwindow *window)
 	glm::mat4 ModelMatrix = glm::mat4(1.0);
 	glm::mat4 MV = ViewMatrix * ModelMatrix;
 
-	glUseProgram(program);
-	glBindVertexArray(vao);
 	glUniformMatrix4fv(mv_loc, 1, GL_FALSE, &MV[0][0]);
 	glUniformMatrix4fv(proj_loc, 1, GL_FALSE, &ProjectionMatrix[0][0]);
+	glBindVertexArray(vao);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	// Draw the triangles !
-
 	glDrawElements(
 		GL_TRIANGLES,      // mode
 		VertexSize,   // count
 		GL_UNSIGNED_SHORT,   // type
 		(void*)0           // element array buffer offset
 		);
-	glUseProgram(0);
+
 	glBindVertexArray(0);
+	glUseProgram(0);
 
-	static double lastTime = 0.0;
-	static int cntFrames = 0;
-	static double currentTime = 0.0;
-	currentTime = glfwGetTime();
-	static int fps = 0;
+	glUseProgram(program);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
+	glClearDepth(1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glViewport(0,0,1200, 800); // Render on the whole framebuffer, complete from the lower left corner to the upper right
+	glUniformMatrix4fv(mv_loc, 1, GL_FALSE, &MV[0][0]);
+	glUniformMatrix4fv(proj_loc, 1, GL_FALSE, &ProjectionMatrix[0][0]);
+	glBindVertexArray(vao);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	// Draw the triangles !
+	glDrawElements(
+		GL_TRIANGLES,      // mode
+		VertexSize,   // count
+		GL_UNSIGNED_SHORT,   // type
+		(void*)0           // element array buffer offset
+		);
 
-	if ( currentTime - lastTime >= 1.0 )
-	{ 
-		fps = cntFrames;
-		cntFrames = 0;
-		lastTime = currentTime;
-	}
-	++cntFrames;
-
-	char text[256];
-	sprintf(text,"Fps:%d", fps);
-	printText2D(text, 10, 500, 30);
+	glBindVertexArray(0);
+	glUseProgram(0);
+	glUseProgram(f_program);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glViewport(0, 0, 1200, 800); 
+	glBindTexture(GL_TEXTURE_2D, tbo);
+	glBindVertexArray(f_vao);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+	glBindVertexArray(0);
+	glUseProgram(0);
 
 }
 
