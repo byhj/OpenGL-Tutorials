@@ -65,10 +65,10 @@ GLuint vao, uvbuffer, vertexbuffer, normalbuffer, elementbuffer;
 GLuint program, texture;
 GLuint proj_loc, mv_loc, tex_loc;
 GLuint VertexSize;
-GLuint fbo, tbo;
+GLuint fbo, tbo, rbo, dtbo;
 
 Shader FboShader("Frame Buffer");
-GLuint f_vao, f_uv, f_vbo;
+GLuint f_vao, f_uv, f_vbo ;
 GLuint f_program, f_tex_loc;
 static const GLfloat QuadData[] = 
 {
@@ -98,6 +98,22 @@ void init_framebuffer()
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		std::cout << "Fbo is not complete" << std::endl;
 
+	glGenTextures(1, &dtbo);
+	glBindTexture(GL_TEXTURE_2D, dtbo);
+	glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT32, 1200, 800, 0,GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, dtbo, 0);
+
+	/*
+	glGenRenderbuffers(1, &rbo);
+	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 1200, 800);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo);
+	
+	*/
 	GLenum drawbuffers[1] = {GL_COLOR_ATTACHMENT0};
 	glDrawBuffers(1, drawbuffers);
 }
@@ -242,7 +258,6 @@ void render(GLFWwindow *window)
 
 	glBindVertexArray(0);
 	glUseProgram(0);
-
 	glUseProgram(program);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
@@ -260,9 +275,10 @@ void render(GLFWwindow *window)
 		GL_UNSIGNED_SHORT,   // type
 		(void*)0           // element array buffer offset
 		);
-
 	glBindVertexArray(0);
 	glUseProgram(0);
+
+
 	glUseProgram(f_program);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, 1200, 800); 
