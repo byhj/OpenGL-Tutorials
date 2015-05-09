@@ -22,7 +22,7 @@ void main()
 
 	vec3 R = reflect(-L, N);
 	vec3 diffuse = max(dot(N, L), 0.0) * texture2D(tex, fs_in.tc).rgb;
-	vec3 specular = pow(max(dot(R, V), 0.0), power) * specular_material;
+	vec3 specular = pow(max(dot(R, V), 0.0), power) * texture2D(tex, fs_in.tc).rgb;
 	vec3 ambient = vec3(0.5, 0.5, 0.5) * texture2D(tex, fs_in.tc).rgb;
 
     // calc the all light attribute

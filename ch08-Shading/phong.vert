@@ -15,7 +15,7 @@ out VS_OUT
 uniform mat4 mv;
 uniform mat4 proj;
 
-uniform vec3 lightPos = vec3(1.0, 1.0, -1.0);
+uniform vec3 lightPos = vec3(2.5, 2.5, -1.0);
 
 void main()
 {
