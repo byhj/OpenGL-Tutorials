@@ -4,7 +4,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "shader.h"
+#include "common/shader.h"
 
 const GLuint Width(1200), Height(800);     //window size
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode);
@@ -79,7 +79,7 @@ void init_shader()
 	TriangleShader.attach(GL_VERTEX_SHADER, "triangle.vert");
 	TriangleShader.attach(GL_FRAGMENT_SHADER, "triangle.frag");
 	TriangleShader.link();
-	program = TriangleShader.program;
+	program = TriangleShader.GetProgram();
 
 	mvp_loc = glGetUniformLocation(program, "mvp");
 
@@ -111,12 +111,13 @@ void render()
 	glUseProgram(program);
 	float time = glfwGetTime();
 
-	glm::mat4 model = rotate(glm::mat4(1.0f), time, glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 model = rotate(glm::mat4(1.0f), time, glm::vec3(0.0f, 0.0f, 1.0f));
 	glm::mat4 view = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, 0.0f),
 		                         glm::vec3(0.0f, 1.0f, 0.0f) );
 	glm::mat4 proj = glm::perspective(45.0f, float(Width) / Height, 0.1f, 1000.0f);
 	glm::mat4 mvp = proj * view * model;
 
+	//When you send the data to shader, we should glUseProgram() first;
 
 	glUniformMatrix4fv(mvp_loc, 1, GL_FALSE, &mvp[0][0]);
 	glBindVertexArray(vao);

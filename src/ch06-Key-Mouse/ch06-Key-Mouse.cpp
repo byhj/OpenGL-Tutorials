@@ -213,7 +213,6 @@ void render(GLFWwindow *window)
 	glm::mat4 ModelMatrix = glm::mat4(1.0);
 	glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
 
-
 	glUseProgram(program);
 
 	//Use set data function after use shader program;

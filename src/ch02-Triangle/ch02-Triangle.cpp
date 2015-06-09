@@ -2,7 +2,7 @@
 #include <GL/glfw3.h>
 #include <iostream>
 
-#include "shader.h"
+#include "common/shader.h"
 
 const GLuint Width(1000), Height(800);     //window size
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode);
@@ -61,6 +61,7 @@ static const GLfloat VertexData[] =
 	 1.0f, -1.0f, 0.0f,
 	 0.0f,  1.0f, 0.0f
 };
+
 void init_buffer()
 {
 	glGenBuffers(1, &vbo);
@@ -75,7 +76,7 @@ void init_shader()
 	TriangleShader.attach(GL_VERTEX_SHADER, "triangle.vert");
 	TriangleShader.attach(GL_FRAGMENT_SHADER, "triangle.frag");
 	TriangleShader.link();
-	program = TriangleShader.program;
+	program = TriangleShader.GetProgram();
 }
 
 void init_vertexArray()
@@ -92,16 +93,16 @@ void init_vertexArray()
 
 void init()
 {
+	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
+
 	init_shader();
 	init_buffer();
 	init_vertexArray();
 }
 
-
-
 void render()
 {
-	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
+
 	glClear(GL_COLOR_BUFFER_BIT);
 	glUseProgram(program);
 	glBindVertexArray(vao);
@@ -110,7 +111,9 @@ void render()
 
 	glBindVertexArray(0);
 	glUseProgram(0);
+
 }
+
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode)
 {
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
