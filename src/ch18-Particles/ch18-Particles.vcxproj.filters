@@ -18,26 +18,12 @@
     <ClCompile Include="ch18-Particles.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\common\include\texture.cpp">
+    <ClCompile Include="..\..\include\common\texture.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\common\include\controls.cpp">
+    <ClCompile Include="..\..\include\common\controls.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\common\include\shaders.cpp">
-      <Filter>Header Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\common\include\texture.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\common\include\controls.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\common\include\shaders.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="particles.vert">
@@ -46,16 +32,13 @@
     <None Include="particles.frag">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="Particle.fragmentshader">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="Particle.vertexshader">
-      <Filter>Resource Files</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="particle.DDS">
-      <Filter>Resource Files</Filter>
-    </Image>
+    <ClInclude Include="..\..\include\common\texture.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\common\controls.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
