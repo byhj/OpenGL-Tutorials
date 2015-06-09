@@ -4,7 +4,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "shader.h"
+#include "common/shader.h"
 
 const GLuint Width(1200), Height(800);     //window size
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode);
@@ -156,7 +156,7 @@ void init_shader()
 	TriangleShader.attach(GL_VERTEX_SHADER, "cube.vert");
 	TriangleShader.attach(GL_FRAGMENT_SHADER, "cube.frag");
 	TriangleShader.link();
-	program = TriangleShader.program;
+	program = TriangleShader.GetProgram();
 
 	mvp_loc = glGetUniformLocation(program, "mvp");
 

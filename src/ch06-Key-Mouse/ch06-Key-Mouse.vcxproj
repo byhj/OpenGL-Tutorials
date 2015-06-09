@@ -68,13 +68,7 @@
     <None Include="cube.vert" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\common\include\controls.cpp" />
-    <ClCompile Include="..\common\include\texture.cpp" />
     <ClCompile Include="ch06-Key-Mouse.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\common\include\controls.hpp" />
-    <ClInclude Include="..\common\include\texture.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

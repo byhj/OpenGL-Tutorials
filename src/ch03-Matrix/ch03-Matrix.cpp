@@ -108,14 +108,16 @@ void render()
 {
 	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
+	glUseProgram(program);
+	float time = glfwGetTime();
 
-	glm::mat4 model = glm::mat4(1.0f);
+	glm::mat4 model = rotate(glm::mat4(1.0f), time, glm::vec3(0.0f, 1.0f, 0.0f));
 	glm::mat4 view = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, 0.0f),
 		                         glm::vec3(0.0f, 1.0f, 0.0f) );
 	glm::mat4 proj = glm::perspective(45.0f, float(Width) / Height, 0.1f, 1000.0f);
 	glm::mat4 mvp = proj * view * model;
 
-	glUseProgram(program);
+
 	glUniformMatrix4fv(mvp_loc, 1, GL_FALSE, &mvp[0][0]);
 	glBindVertexArray(vao);
 	glDrawArrays(GL_TRIANGLES, 0, 3);

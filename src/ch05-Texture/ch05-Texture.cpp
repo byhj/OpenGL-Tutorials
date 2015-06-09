@@ -4,9 +4,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "controls.hpp"
-#include "texture.hpp"
-#include "shader.h"
+#include "common/controls.cpp"
+#include "common/texture.cpp"
+#include "common/shader.h"
 
 const GLuint Width(1200), Height(800);     //window size
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode);
@@ -158,7 +158,7 @@ void init_shader()
 	TriangleShader.attach(GL_VERTEX_SHADER, "cube.vert");
 	TriangleShader.attach(GL_FRAGMENT_SHADER, "cube.frag");
 	TriangleShader.link();
-	program = TriangleShader.program;
+	program = TriangleShader.GetProgram();
 
 	mvp_loc = glGetUniformLocation(program, "mvp");
 	tex_loc = glGetUniformLocation(program, "tex");
@@ -184,7 +184,7 @@ void init_vertexArray()
 
 void init_texture()
 {
-	texture = loadDDS("../common/media/texture/uvtemplate.DDS");
+	texture = loadDDS("../../media/texture/uvtemplate.DDS");
 }
 
 void init()
@@ -217,7 +217,7 @@ void render()
 
 	//Use set data function after use shader program;
 	glBindTexture(GL_TEXTURE_2D, texture);
-	glUniformMatrix4fv(mvp_loc, 1, GL_FALSE, &MVP[0][0]);
+	glUniformMatrix4fv(mvp_loc, 1, GL_FALSE, &mvp[0][0]);
 	glBindVertexArray(vao);
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 	glBindVertexArray(0);

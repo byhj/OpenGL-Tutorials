@@ -26,24 +26,24 @@
     <ClCompile Include="ch09-VBO.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\common\include\objloader.cpp">
+    <ClCompile Include="..\..\include\common\texture.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\common\include\texture.cpp">
+    <ClCompile Include="..\..\include\common\controls.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\common\include\controls.cpp">
+    <ClCompile Include="..\..\include\common\objloader.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\common\include\controls.hpp">
+    <ClInclude Include="..\..\include\common\objloader.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\common\include\objloader.hpp">
+    <ClInclude Include="..\..\include\common\texture.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\common\include\texture.hpp">
+    <ClInclude Include="..\..\include\common\controls.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

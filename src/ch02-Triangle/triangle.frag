@@ -5,5 +5,5 @@ layout (location = 0) out vec4 fragColor;
 void main(void)
 {
 
-  fragColor = vec4(1.0, 0.0, 0.0, 1.0);
+  fragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);
 }

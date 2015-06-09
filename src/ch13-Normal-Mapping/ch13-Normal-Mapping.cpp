@@ -6,12 +6,12 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <vector>
 
-#include "controls.hpp"
-#include "texture.hpp"
-#include "objloader.hpp"
-#include "tangentspace.hpp"
-#include "shader.h"
-#include "vboindexer.hpp"
+#include "common/controls.hpp"
+#include "common/texture.hpp"
+#include "common/objloader.hpp"
+#include "common/tangentspace.hpp"
+#include "common/shader.h"
+#include "common/vboindexer.hpp"
 
 const GLuint Width(1200), Height(800);     //window size
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode);
@@ -75,7 +75,7 @@ void init_buffer()
 	std::vector<glm::vec3> vertices;
 	std::vector<glm::vec2> uvs;
 	std::vector<glm::vec3> normals; // Won't be used at the moment.
-	bool res = loadOBJ("../common/media/object/cylinder.obj", vertices, uvs, normals);
+	bool res = loadOBJ("../../media/object/cylinder.obj", vertices, uvs, normals);
 	std::vector<glm::vec3> tangents;
 	std::vector<glm::vec3> bitangents;
 
@@ -139,7 +139,7 @@ void init_shader()
 	TriangleShader.attach(GL_VERTEX_SHADER, "phong.vert");
 	TriangleShader.attach(GL_FRAGMENT_SHADER, "phong.frag");
 	TriangleShader.link();
-	program = TriangleShader.program;
+	program = TriangleShader.GetProgram();
 
 	mv_loc = glGetUniformLocation(program, "mv");
 	proj_loc = glGetUniformLocation(program, "proj");

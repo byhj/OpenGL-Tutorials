@@ -17,15 +17,15 @@
     <None Include="tex2d.vert" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\common\include\controls.cpp" />
-    <ClCompile Include="..\common\include\objloader.cpp" />
-    <ClCompile Include="..\common\include\texture.cpp" />
+    <ClCompile Include="..\..\include\common\controls.cpp" />
+    <ClCompile Include="..\..\include\common\objloader.cpp" />
+    <ClCompile Include="..\..\include\common\texture.cpp" />
     <ClCompile Include="ch11-2D-Text.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\common\include\controls.hpp" />
-    <ClInclude Include="..\common\include\objloader.hpp" />
-    <ClInclude Include="..\common\include\texture.hpp" />
+    <ClInclude Include="..\..\include\common\controls.hpp" />
+    <ClInclude Include="..\..\include\common\objloader.hpp" />
+    <ClInclude Include="..\..\include\common\texture.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{A5A5DB6B-2985-4EE7-B30A-B94D0A6079C4}</ProjectGuid>

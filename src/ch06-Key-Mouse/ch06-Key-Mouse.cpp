@@ -1,12 +1,13 @@
 #include <GL/glew.h>
 #include <GL/glfw3.h>
 #include <iostream>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "controls.hpp"
-#include "texture.hpp"
-#include "shader.h"
+#include "common/controls.cpp"
+#include "common/texture.cpp"
+#include "common/shader.h"
 
 const GLuint Width(1200), Height(800);     //window size
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode);
@@ -159,7 +160,7 @@ void init_shader()
 	TriangleShader.attach(GL_VERTEX_SHADER, "cube.vert");
 	TriangleShader.attach(GL_FRAGMENT_SHADER, "cube.frag");
 	TriangleShader.link();
-	program = TriangleShader.program;
+	program = TriangleShader.GetProgram();
 
 	mvp_loc = glGetUniformLocation(program, "mvp");
 	tex_loc = glGetUniformLocation(program, "tex");
@@ -185,7 +186,7 @@ void init_vertexArray()
 
 void init_texture()
 {
-	texture = loadDDS("../common/media/texture/uvtemplate.DDS");
+	texture = loadDDS("../../media/texture/uvtemplate.DDS");
 }
 
 void init()

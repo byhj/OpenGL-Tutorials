@@ -33,6 +33,7 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\OpenGL-Tutorial.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -62,6 +63,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\include\common\controls.cpp" />
+    <ClCompile Include="..\..\include\common\objloader.cpp" />
+    <ClCompile Include="..\..\include\common\texture.cpp" />
+    <ClCompile Include="ch15-Light-Mapping.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\include\common\controls.hpp" />
+    <ClInclude Include="..\..\include\common\objloader.hpp" />
+    <ClInclude Include="..\..\include\common\shader.h" />
+    <ClInclude Include="..\..\include\common\texture.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="lightMap.frag" />
+    <None Include="lightMap.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

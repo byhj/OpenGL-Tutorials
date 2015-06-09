@@ -6,10 +6,11 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <vector>
 
-#include "controls.hpp"
-#include "texture.hpp"
-#include "shader.h"
-#include "objloader.hpp"
+#include "common/controls.hpp"
+#include "common/texture.hpp"
+#include "common/shader.h"
+#include "common/objloader.hpp"
+
 #include <vector>
 #include <cstring>
 
@@ -18,9 +19,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 using namespace glm;
-
-#include "shader.h"
-#include "texture.hpp"
 
 
 unsigned int Text2DTextureID;
@@ -42,7 +40,7 @@ void initText2D(const char * texturePath)
 	Tex2DShader.attach(GL_FRAGMENT_SHADER, "tex2d.frag");
 	Tex2DShader.link();
 
-	Text2DShaderID = Tex2DShader.program;
+	Text2DShaderID = Tex2DShader.GetProgram();
 	Text2DUniformID = glGetUniformLocation(Text2DShaderID, "tex2d");
 }
 
@@ -203,7 +201,7 @@ void init_buffer()
 	std::vector<glm::vec2> indexed_uvs;
 	std::vector<glm::vec3> indexed_normals;
 
-	bool res = loadAssImp("../common/media/object/suzanne.obj", indices, indexed_vertices, indexed_uvs, indexed_normals);
+	bool res = loadAssImp("../../media/object/suzanne.obj", indices, indexed_vertices, indexed_uvs, indexed_normals);
 	
 
 	glGenBuffers(1, &vertexbuffer);
@@ -234,7 +232,7 @@ void init_shader()
 	TriangleShader.attach(GL_VERTEX_SHADER, "phong.vert");
 	TriangleShader.attach(GL_FRAGMENT_SHADER, "phong.frag");
 	TriangleShader.link();
-	program = TriangleShader.program;
+	program = TriangleShader.GetProgram();
 
 	mv_loc = glGetUniformLocation(program, "mv");
 	proj_loc = glGetUniformLocation(program, "proj");
@@ -268,7 +266,7 @@ void init_vertexArray()
 
 void init_texture()
 {
-	texture = loadDDS("../common/media/texture/color.DDS");
+	texture = loadDDS("../../media/texture/color.DDS");
 }
 
 void init()
@@ -284,7 +282,7 @@ void init()
 	init_vertexArray();
 	init_texture();
 
-	initText2D( "../common/media/texture/Holstein.DDS" );
+	initText2D( "../../media/texture/Holstein.DDS" );
 }
 
 void render(GLFWwindow *window)

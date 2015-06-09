@@ -4,7 +4,7 @@
 
 #include "shader.h"
 
-const GLuint Width(1200), Height(1024);     //window size
+const GLuint Width(1000), Height(800);     //window size
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode);
 void init();
 void render();
@@ -83,8 +83,10 @@ void init_vertexArray()
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
 	glBindVertexArray(0);
 }
 
@@ -103,7 +105,9 @@ void render()
 	glClear(GL_COLOR_BUFFER_BIT);
 	glUseProgram(program);
 	glBindVertexArray(vao);
+
 	glDrawArrays(GL_TRIANGLES, 0, 3);
+
 	glBindVertexArray(0);
 	glUseProgram(0);
 }

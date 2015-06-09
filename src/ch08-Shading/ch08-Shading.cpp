@@ -6,10 +6,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <vector>
 
-#include "controls.hpp"
-#include "texture.hpp"
-#include "objloader.hpp"
-#include "shader.h"
+#include "common/controls.cpp"
+#include "common/texture.cpp"
+#include "common/objloader.cpp"
+#include "common/shader.h"
 
 const GLuint Width(1200), Height(800);     //window size
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode);
@@ -72,7 +72,7 @@ void init_buffer()
 	std::vector<glm::vec3> vertices;
 	std::vector<glm::vec2> uvs;
 	std::vector<glm::vec3> normals; // Won't be used at the moment.
-	bool res = loadOBJ("../common/media/object/suzanne.obj", vertices, uvs, normals);
+	bool res = loadOBJ("../../media/object/suzanne.obj", vertices, uvs, normals);
 
 	glGenBuffers(1, &vertexbuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
@@ -95,7 +95,7 @@ void init_shader()
 	TriangleShader.attach(GL_VERTEX_SHADER, "phong.vert");
 	TriangleShader.attach(GL_FRAGMENT_SHADER, "phong.frag");
 	TriangleShader.link();
-	program = TriangleShader.program;
+	program = TriangleShader.GetProgram();
 
 	mv_loc = glGetUniformLocation(program, "mv");
 	proj_loc = glGetUniformLocation(program, "proj");
@@ -129,7 +129,7 @@ void init_vertexArray()
 
 void init_texture()
 {
-	texture = loadDDS("../common/media/texture/color.DDS");
+	texture = loadDDS("../../media/texture/color.DDS");
 }
 
 void init()

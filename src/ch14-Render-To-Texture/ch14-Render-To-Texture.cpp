@@ -6,10 +6,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <vector>
 
-#include "controls.hpp"
-#include "texture.hpp"
-#include "objloader.hpp"
-#include "shader.h"
+#include "common/controls.hpp"
+#include "common/texture.hpp"
+#include "common/objloader.hpp"
+#include "common/shader.h"
 
 const GLuint Width(1200), Height(800);     //window size
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode);
@@ -123,7 +123,7 @@ void init_buffer()
 	std::vector<glm::vec3> indexed_vertices;
 	std::vector<glm::vec2> indexed_uvs;
 	std::vector<glm::vec3> indexed_normals;
-	bool res = loadAssImp("../common/media/object/suzanne.obj", indices, indexed_vertices, indexed_uvs, indexed_normals);
+	bool res = loadAssImp("../../media/object/suzanne.obj", indices, indexed_vertices, indexed_uvs, indexed_normals);
 	
 
 	glGenBuffers(1, &vertexbuffer);
@@ -159,7 +159,7 @@ void init_shader()
 	TriangleShader.attach(GL_VERTEX_SHADER, "phong.vert");
 	TriangleShader.attach(GL_FRAGMENT_SHADER, "phong.frag");
 	TriangleShader.link();
-	program = TriangleShader.program;
+	program = TriangleShader.GetProgram();
 
 	mv_loc = glGetUniformLocation(program, "mv");
 	proj_loc = glGetUniformLocation(program, "proj");
@@ -170,7 +170,7 @@ void init_shader()
 	FboShader.attach(GL_VERTEX_SHADER, "fbo.vert");
 	FboShader.attach(GL_FRAGMENT_SHADER, "fbo.frag");
 	FboShader.link();
-	f_program = FboShader.program;
+	f_program = FboShader.GetProgram();
 	f_tex_loc = glGetUniformLocation(f_program, "tex");
 	glUniform1i(f_tex_loc, 0);
 }
@@ -213,7 +213,7 @@ void init_vertexArray()
 
 void init_texture()
 {
-	texture = loadDDS("../common/media/texture/color.DDS");
+	texture = loadDDS("../../media/texture/color.DDS");
 }
 
 void init()
