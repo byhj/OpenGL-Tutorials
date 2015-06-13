@@ -6,7 +6,7 @@
 
 #include <GL/glew.h>
 
-#include <gl/glfw3.h>
+#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/norm.hpp>
